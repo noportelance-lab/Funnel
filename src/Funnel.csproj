@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>Funnel</AssemblyName>
+    <RootNamespace>Funnel</RootNamespace>
+
+    <!-- Same as ARDesk: lets the 8.0 app run on a newer runtime when 8.0 isn't present. -->
+    <RollForward>Major</RollForward>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <Product>Funnel</Product>
+    <AssemblyTitle>Funnel</AssemblyTitle>
+    <Version>1.0.0</Version>
+    <Authors>Noé Portelance</Authors>
+
+    <!-- Single, self-contained .exe: no .NET runtime or side files required. -->
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <ErrorReport>none</ErrorReport>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2792.45" />
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
+    <!-- DPAPI: API keys are stored encrypted for the current Windows user. -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+
+  <!-- Web UI is embedded so the published .exe is standalone; extracted to temp at launch. -->
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\index.html"><LogicalName>web.index.html</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="wwwroot\styles.css"><LogicalName>web.styles.css</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="wwwroot\app.js"><LogicalName>web.app.js</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="wwwroot\explain.js"><LogicalName>web.explain.js</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="wwwroot\loader.js"><LogicalName>web.loader.js</LogicalName></EmbeddedResource>
+    <!-- Start-screen background (muted, looped behind the McGill-red sheet). -->
+    <EmbeddedResource Include="Assets\McGill-Desautels-The-SnapYT.App.webm"><LogicalName>web.start-bg.webm</LogicalName></EmbeddedResource>
+    <!-- Club logos for the guest disclaimer. -->
+    <EmbeddedResource Include="Assets\MIC-Logos-AI-Black_Square-Short1.webp"><LogicalName>web.logo-mic.webp</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Assets\images.jpg"><LogicalName>web.logo-dmcc.jpg</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Assets\app.ico"><LogicalName>data.app.ico</LogicalName></EmbeddedResource>
+    <!-- The app logo (Assets\New funnel icon.jpg cropped to its rounded square, corners transparent). -->
+    <EmbeddedResource Include="Assets\logo.png"><LogicalName>web.logo.png</LogicalName></EmbeddedResource>
+  </ItemGroup>
+
+</Project>

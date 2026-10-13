@@ -1,0 +1,204 @@
+FUNNEL — PRIVACY POLICY
+
+Effective date: October 8, 2026
+Applies to: Funnel for Windows, version 1.0.0 and later
+
+Funnel ("the app") is a desktop application for company research, peer
+comparisons, discounted-cash-flow modelling and Excel export. This policy
+explains what information the app handles, where it goes, and the choices you
+have. In short: Funnel runs entirely on your computer, has no user accounts,
+and does not send any information to its developer.
+
+
+1. WHO WE ARE
+
+Funnel is developed by [DEVELOPER NAME] ("we", "us"). Questions about this
+policy can be sent to [CONTACT EMAIL].
+
+
+2. THE SHORT VERSION
+
+  - No accounts or sign-in. Funnel opens in guest mode only.
+  - No analytics, telemetry, advertising or tracking of any kind.
+  - We do not operate a server. Nothing you do in Funnel is sent to us.
+  - Your settings, saved comp sets and DCF cases stay on your computer.
+  - To fetch market data, Funnel connects directly from your computer to the
+    third-party data sources you choose (listed in section 5). Those services
+    see the requests you make, as described below.
+
+
+3. INFORMATION STORED ON YOUR COMPUTER
+
+Funnel keeps the following in its own folder, %LOCALAPPDATA%\Funnel:
+
+  a) Settings file (config.json), containing:
+       - your preferred data source for each section of the app;
+       - display preferences (units, annual/quarterly, macro panel on/off);
+       - your Excel export folder;
+       - recently viewed ticker symbols;
+       - peer sets you have saved for each ticker;
+       - DCF model assumptions you have saved for each ticker;
+       - the contact email you entered for SEC EDGAR, if any;
+       - API keys you entered for optional data providers, if any.
+
+     API keys are encrypted with Windows Data Protection (DPAPI), so they can
+     only be decrypted by your Windows user account on that computer. The
+     other settings, including the SEC contact email, are stored as plain text.
+
+  b) Web view data (the WebView2 subfolder). The app's interface runs in
+     Microsoft Edge WebView2. That component keeps its usual cache and
+     browser storage in this folder. Funnel loads its interface from files
+     built into the app and does not load outside web pages, fonts or scripts
+     into it.
+
+  c) Excel workbooks you export. These are saved where you choose (by default
+     Documents\Funnel) and contain only the market data and model inputs you
+     selected for export.
+
+  d) Crash log. If the app crashes, it writes a file named Funnel-crash.log to
+     your Desktop (or, failing that, your temporary folder or the app folder)
+     and shows it on screen. The log contains the time and technical error
+     details, which may include file paths on your computer such as your
+     Windows user name. The log is never sent anywhere; you choose whether to
+     share it.
+
+None of this information is transmitted to us.
+
+
+4. INFORMATION SENT OVER THE INTERNET
+
+Funnel needs an internet connection to retrieve market data. When you look up
+a company, open a page, or refresh data, the app sends requests directly from
+your computer to the relevant data source. As with any internet request, the
+receiving service can see:
+
+  - your IP address and the time of the request;
+  - what you asked for, such as ticker symbols, search text, statement type,
+    date ranges and chart intervals;
+  - a software identifier (user-agent string).
+
+In addition, depending on the source:
+
+  - SEC EDGAR: the SEC requires every automated client to identify itself.
+    If you choose SEC EDGAR as a source, Funnel includes the contact email
+    you entered in each request to the SEC (in the User-Agent header). Funnel
+    does not contact the SEC on your behalf until you provide this email.
+
+  - Financial Modeling Prep and Finnhub: if you enable these optional
+    providers, the API key you entered is sent with each request to that
+    provider, as their service requires.
+
+  - Yahoo Finance: to make requests, Funnel obtains a session cookie and
+    access token from Yahoo. These are kept in memory only while the app is
+    running and are not saved to disk.
+
+Funnel does not send your settings, saved comp sets, DCF models, exported
+files or crash logs to any data source.
+
+
+5. THIRD-PARTY DATA SOURCES
+
+Depending on your choices in the Data sources panel, Funnel may contact:
+
+  - Yahoo Finance (query1/query2.finance.yahoo.com, fc.yahoo.com)
+      Default source for quotes, charts, statements, comps, analysts, news.
+  - U.S. Securities and Exchange Commission — EDGAR
+      (www.sec.gov, data.sec.gov, efts.sec.gov)
+      Financial statements as filed, industry peers and filings.
+  - Financial Modeling Prep (financialmodelingprep.com) — optional, API key.
+  - Finnhub (finnhub.io) — optional, API key.
+  - Bank of Canada (www.bankofcanada.ca) — interest rates and exchange rates.
+  - U.S. Department of the Treasury (home.treasury.gov) — Treasury yield curve.
+
+Each of these services handles the requests it receives under its own privacy
+policy and terms of use, which we do not control. We encourage you to review
+them, especially for any provider where you have created an account to obtain
+an API key.
+
+If a source you selected cannot answer a request, Funnel falls back to Yahoo
+Finance for that request and tells you once when this happens.
+
+External links: some screens show links such as a company's website. Clicking
+one opens it in your default web browser, where that site's own policies
+apply.
+
+Microsoft WebView2: the app's interface is displayed by the Microsoft Edge
+WebView2 Runtime installed on your computer. Microsoft may collect diagnostic
+data from that runtime according to your Windows and Microsoft Edge settings
+and Microsoft's privacy statement. Funnel turns off developer tools and the
+default context menus in its window but does not change Microsoft's
+diagnostic settings.
+
+
+6. HOW INFORMATION IS USED
+
+Information stored by Funnel is used only to run the app on your computer:
+to remember your preferences, restore your saved peer sets and models, route
+requests to the sources you chose, and authenticate with optional providers.
+We do not sell, rent, share or otherwise disclose your information, because we
+never receive it.
+
+
+7. DATA RETENTION AND DELETION
+
+Everything Funnel stores stays until you remove it. You can:
+
+  - remove an API key or change your SEC contact email in the Data sources
+    panel;
+  - delete exported workbooks and crash logs like any other file;
+  - delete all app data by closing Funnel and deleting the folder
+    %LOCALAPPDATA%\Funnel. This removes your settings, saved peer sets, saved
+    DCF cases, encrypted API keys and web view data.
+
+Uninstalling or deleting Funnel.exe alone does not remove that folder.
+
+Information already sent to a third-party data source is held by that
+provider under its own policy. Contact the provider directly about it.
+
+
+8. SECURITY
+
+API keys are encrypted at rest using Windows DPAPI and tied to your Windows
+user account. All connections to data sources use HTTPS. Because other
+settings are stored as plain text in your user profile, anyone with access
+to your Windows account can read them. Protect your account with a password
+and keep your computer secure.
+
+
+9. CHILDREN
+
+Funnel is a financial research tool intended for adults and students. It is
+not directed at children under 13 (or the equivalent minimum age in your
+jurisdiction), and it does not knowingly collect information from anyone,
+including children.
+
+
+10. YOUR RIGHTS
+
+Depending on where you live (for example under Quebec's Law 25, Canada's
+PIPEDA, the EU/UK GDPR or California's CCPA), you may have rights to access,
+correct or delete personal information and to know how it is used. Because
+Funnel stores your information only on your own computer and we hold none of
+it, you can exercise these rights directly using the steps in section 7. For
+information held by a third-party data source, contact that provider. For any
+other question, contact us at [CONTACT EMAIL].
+
+
+11. NOT FINANCIAL ADVICE
+
+Market data, analyst figures and model outputs in Funnel come from third
+parties or from your own assumptions. They may be delayed, incomplete or
+inaccurate and are provided for research and educational purposes only.
+
+
+12. CHANGES TO THIS POLICY
+
+If Funnel's handling of information changes, for example if a new data source
+is added, we will update this policy and its effective date, and include the
+updated policy with the new version of the app.
+
+
+13. CONTACT
+
+[DEVELOPER NAME]
+[CONTACT EMAIL]

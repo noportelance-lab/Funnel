@@ -1,0 +1,17 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+artifacts/
+*.binlog
+
+# Funnel
+/dist/
+Funnel.exe
+*.xlsx
+~$*
+.env
+dist-new/

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Funnel</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Icon sprite. Line icons on a 24 grid; colour comes from currentColor. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-markets" viewBox="0 0 24 24"><path d="M3 17l5-6 4 3 6-8 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 21h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-overview" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 7h3M8 11h3M8 15h3M13 7h3M13 11h3M13 15h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-comps" viewBox="0 0 24 24"><path d="M5 20V10M10 20V4M15 20v-7M20 20V8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-analysts" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 20c.6-3.4 3-5.4 6-5.4s5.4 2 6 5.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 5.2a3 3 0 010 5.6M18.4 14.8c1.4.8 2.3 2.4 2.6 5.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-financials" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M9 9v11" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-excel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 10-2.3 5.7M20 4v7h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-model" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 7h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="8.5" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="15.5" cy="12" r="1.2" fill="currentColor"/><circle cx="8.5" cy="16" r="1.2" fill="currentColor"/><circle cx="12" cy="16" r="1.2" fill="currentColor"/><circle cx="15.5" cy="16" r="1.2" fill="currentColor"/></symbol>
+    <symbol id="i-sources" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="2.8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 6v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6M5 12v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M5.5 18.5l1.8-1.8M16.7 7.3l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M12 3c3.5 2 5.5 5.6 5 10.5l-2.6 2.6H9.6L7 13.5C6.5 8.6 8.5 5 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="10" r="1.8" fill="currentColor"/><path d="M7.4 13.8L4.5 16.5l3.6.6M16.6 13.8l2.9 2.7-3.6.6M10.5 18.5L12 21l1.5-2.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-fwd" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-debt" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 15l3-4 3 2 4-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <!-- ================= START SCREEN =================
+       On screen from the first frame (no `hidden`), so there's never a flash of the app behind
+       it. Three layers: the looping campus video, a faint McGill-red sheet over it, then the
+       panel. No accounts yet — "Continue as guest" is the only way in. -->
+  <div class="gate" id="gate">
+    <video class="gate-video" id="gate-video" src="start-bg.webm" autoplay muted loop playsinline preload="auto"></video>
+    <div class="gate-sheet"></div>
+    <div class="gate-panel">
+      <img class="gate-logo" src="logo.png" alt="" />
+      <h1 class="gate-title">Funnel</h1>
+      <p class="gate-tag">Research, comps and financials, straight into Excel.</p>
+      <button class="gate-btn" id="gate-continue">Continue as guest</button>
+      <div class="gate-note">Sign-in is coming soon. Guest sessions keep their settings on this computer.</div>
+    </div>
+    <div class="gate-foot">Desautels Faculty of Management · McGill University</div>
+
+    <!-- Guest disclaimer: shown on "Continue as guest"; the app only opens once the user
+         confirms they're on the MIC investment committee or a DMCC delegate. -->
+    <div class="disc hidden" id="disc" role="dialog" aria-modal="true" aria-labelledby="disc-title">
+      <div class="disc-card">
+        <div class="disc-logos">
+          <img src="logo-mic.webp" alt="MIC" />
+          <img src="logo-dmcc.jpg" alt="DMCC" />
+        </div>
+        <h2 class="disc-title" id="disc-title">Internal use only</h2>
+        <p>Funnel is <b>not for commercial use</b>. It is provided solely for internal use by the
+          Desautels Management Competitions Committee (DMCC) and the McGill Investment Club (MIC).</p>
+        <p>Confirm which applies to you:</p>
+        <label class="disc-check"><input type="checkbox" id="disc-mic" /> I am a member of the MIC investment committee</label>
+        <label class="disc-check"><input type="checkbox" id="disc-dmcc" /> I am a DMCC delegate</label>
+        <p class="disc-warn">Use outside these parameters will be sanctioned.</p>
+        <div class="disc-actions">
+          <button class="btn" id="disc-cancel">Cancel</button>
+          <button class="btn primary" id="disc-accept" disabled>Agree &amp; continue</button>
+        </div>
+        <div class="disc-copy">© 2026 Noé Portelance. All rights reserved.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo" src="logo.png" alt="" />
+        <div>
+          <div class="brand-name">Funnel</div>
+          <div class="brand-sub" id="brand-sub">Market research → Excel</div>
+        </div>
+      </div>
+
+      <!-- Two modes over the same company tabs: Research opens on the Markets board, YOLO on the
+           screen of 100x candidates. -->
+      <div class="mode-switch" id="mode-switch" role="tablist" aria-label="Mode">
+        <button data-mode="research" class="on" role="tab" title="Research mode"><svg class="ic rail-only"><use href="#i-markets"/></svg>Research mode</button>
+        <button data-mode="yolo" role="tab" title="YOLO mode"><svg class="ic"><use href="#i-rocket"/></svg>YOLO mode</button>
+      </div>
+
+      <nav class="nav" id="nav">
+        <button class="nav-item active" data-tab="markets"><svg class="ic"><use href="#i-markets"/></svg>Markets</button>
+        <button class="nav-item hidden" data-tab="yolo"><svg class="ic"><use href="#i-rocket"/></svg>YOLO board</button>
+        <div class="nav-label">Company</div>
+        <button class="nav-item" data-tab="overview"><svg class="ic"><use href="#i-overview"/></svg>Overview</button>
+        <button class="nav-item" data-tab="comps"><svg class="ic"><use href="#i-comps"/></svg>Comps</button>
+        <button class="nav-item" data-tab="analysts"><svg class="ic"><use href="#i-analysts"/></svg>Analysts</button>
+        <button class="nav-item" data-tab="financials"><svg class="ic"><use href="#i-financials"/></svg>Financials &amp; export</button>
+        <button class="nav-item" data-tab="debt"><svg class="ic"><use href="#i-debt"/></svg>Debt &amp; cost of debt</button>
+        <button class="nav-item" data-tab="model"><svg class="ic"><use href="#i-model"/></svg>Model (DCF)</button>
+        <button class="nav-item yolo-only hidden" data-tab="thesis"><svg class="ic"><use href="#i-rocket"/></svg>YOLO rationale</button>
+      </nav>
+
+      <div class="recent" id="recent-wrap">
+        <div class="nav-label">Recent</div>
+        <div class="recent-list" id="recent"></div>
+      </div>
+
+      <div class="sidebar-foot">
+        <div class="foot-label">Settings</div>
+        <button class="src-btn" id="open-sources" title="Settings → Data sources"><svg class="ic"><use href="#i-sources"/></svg><span id="src-summary">…</span></button>
+        <button class="src-btn" id="open-dcf" title="Settings → DCF assumptions"><svg class="ic"><use href="#i-model"/></svg><span id="dcf-summary">…</span></button>
+        <button class="src-btn" id="open-saved" title="Settings → Saved data: companies with inputs you've changed"><svg class="ic"><use href="#i-refresh"/></svg><span id="saved-summary">…</span></button>
+        <div class="foot-ver" id="version"></div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN ================= -->
+    <main class="main">
+      <!-- Tabs: each one a page of its own (company, view, history). -->
+      <div class="tabstrip" id="tabstrip">
+        <div class="wtabs" id="wtabs" role="tablist" aria-label="Open tabs"></div>
+        <button class="tab-new" id="tab-new" title="New tab (Ctrl+T)" aria-label="New tab"><svg class="ic"><use href="#i-plus"/></svg></button>
+      </div>
+      <header class="topbar">
+        <div class="histnav">
+          <button class="hn-btn" id="nav-back" title="Back (Alt+←)" aria-label="Back" disabled><svg class="ic"><use href="#i-back"/></svg></button>
+          <button class="hn-btn" id="nav-fwd" title="Forward (Alt+→)" aria-label="Forward" disabled><svg class="ic"><use href="#i-fwd"/></svg></button>
+        </div>
+        <div class="search" id="search-box">
+          <svg class="search-ic"><use href="#i-search"/></svg>
+          <input id="search" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="Search a company or ticker…" />
+          <kbd class="search-kbd">/</kbd>
+          <div class="search-drop hidden" id="search-drop"></div>
+        </div>
+        <button class="btn primary" id="btn-export-top" disabled>
+          <svg class="ic"><use href="#i-excel"/></svg>Export to Excel
+        </button>
+      </header>
+      <div class="busybar hidden" id="busybar"><div></div></div>
+
+      <div class="content" id="content">
+
+        <!-- Shared header for every company tab -->
+        <div class="co-head hidden" id="co-head"></div>
+
+        <!-- Company tab with nothing picked yet -->
+        <section class="co-empty hidden" id="co-empty">
+          <img class="co-empty-logo" src="logo.png" alt="" />
+          <h2>Research a company</h2>
+          <p>Search by name or ticker above, or start with one of these.</p>
+          <div class="chips" id="co-empty-chips"></div>
+        </section>
+
+        <!-- ================= MARKETS ================= -->
+        <section class="tab active" id="tab-markets">
+          <div class="page-head">
+            <div>
+              <h1>Markets</h1>
+              <div class="sub" id="market-asof">Loading…</div>
+            </div>
+            <button class="btn ghost" id="market-refresh"><svg class="ic"><use href="#i-refresh"/></svg>Refresh</button>
+          </div>
+          <div id="board"></div>
+          <div class="movers" id="movers"></div>
+        </section>
+
+        <!-- ================= YOLO BOARD ================= -->
+        <section class="tab" id="tab-yolo">
+          <div class="page-head">
+            <div>
+              <h1>YOLO mode <span class="yolo-badge">100x hunt</span></h1>
+              <div class="sub" id="yolo-asof">Mining, biotech and small-cap names with a credible path to 100x.</div>
+            </div>
+            <button class="btn ghost" id="yolo-refresh"><svg class="ic"><use href="#i-refresh"/></svg>Run the screen again</button>
+          </div>
+          <div class="yolo-warn"><b>Speculative by design.</b> These are lottery tickets with reasons attached, not advice: most would-be 100-baggers go to zero. Size them so losing all of it is fine, and do the research on each tab before acting.</div>
+          <div class="yolo-progress hidden" id="yolo-progress">
+            <div class="yp-msg" id="yp-msg">Starting the screen…</div>
+            <div class="pp-bar"><div id="yp-fill"></div></div>
+          </div>
+          <div class="card yolo-card yolo-skel hidden" id="yolo-skel"></div>
+          <div class="card yolo-card hidden" id="yolo-card">
+            <div class="yolo-filters">
+              <div class="yf"><span class="yf-label">Group</span><div class="seg" id="yolo-group"></div></div>
+              <div class="yf"><span class="yf-label">Promising level</span><div class="seg" id="yolo-level">
+                <button data-v="9" class="on">9–10</button><button data-v="7">7+</button><button data-v="5">5+</button><button data-v="1">All</button></div></div>
+              <div class="yf"><span class="yf-label">Industry</span><select id="yolo-industry" class="yolo-select"></select></div>
+              <span style="flex:1"></span>
+              <div class="yolo-count" id="yolo-count"></div>
+            </div>
+            <div class="yolo-head" id="yolo-head"></div>
+            <div id="yolo-list"></div>
+          </div>
+          <div class="card yolo-method hidden" id="yolo-method"></div>
+        </section>
+
+        <!-- ================= OVERVIEW ================= -->
+        <section class="tab" id="tab-overview">
+          <div class="ov-grid">
+            <div class="card chart-card">
+              <div class="chart-top">
+                <div class="chart-readout" id="chart-readout"></div>
+                <div class="seg" id="chart-ranges">
+                  <button data-r="1d">1D</button><button data-r="5d">5D</button><button data-r="1mo">1M</button>
+                  <button data-r="6mo">6M</button><button data-r="ytd">YTD</button><button data-r="1y" class="on">1Y</button>
+                  <button data-r="5y">5Y</button><button data-r="max">Max</button>
+                </div>
+              </div>
+              <div class="chart" id="chart"></div>
+              <div class="chart-stats" id="chart-stats"></div>
+            </div>
+            <div class="ov-side">
+              <div class="card" id="ov-street"></div>
+              <div class="card" id="ov-multiples"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Key statistics</div>
+            <div class="stats-grid" id="ov-stats"></div>
+          </div>
+          <div class="card" id="ov-about"></div>
+          <div class="feed-grid">
+            <div class="card" id="ov-filings"></div>
+            <div class="card" id="ov-news"></div>
+          </div>
+        </section>
+
+        <!-- ================= COMPS ================= -->
+        <section class="tab" id="tab-comps">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Quick comps</div>
+                <div class="card-sub">Trading multiples against the peer set. Add or remove tickers — your set is remembered per company.</div>
+                <div class="card-sub basis" id="comps-basis"></div>
+              </div>
+              <div class="row-gap">
+                <button class="btn ghost" id="comps-suggest">Use suggested peers</button>
+                <button class="btn ghost" id="comps-refresh"><svg class="ic"><use href="#i-refresh"/></svg>Refresh</button>
+              </div>
+            </div>
+            <div class="peer-editor" id="peer-editor">
+              <div class="chips" id="peer-chips"></div>
+              <input id="peer-add" type="text" placeholder="Add ticker + Enter" spellcheck="false" autocomplete="off" />
+            </div>
+            <div class="table-wrap"><table class="grid comps" id="comps-table"></table></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Where it sits in the peer range</div>
+            <div class="card-sub">Bar = peer low to high · tick = peer median · dot = this company</div>
+            <div class="ranges" id="comps-ranges"></div>
+          </div>
+        </section>
+
+        <!-- ================= ANALYSTS ================= -->
+        <section class="tab" id="tab-analysts">
+          <div class="an-top" id="an-top"></div>
+          <div class="an-mid">
+            <div class="card" id="an-dist"></div>
+            <div class="card" id="an-trend"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Who's behind each call</div>
+                <div class="card-sub" id="an-firms-sub"></div>
+              </div>
+            </div>
+            <div class="firm-cols" id="an-firms"></div>
+          </div>
+        </section>
+
+        <!-- ================= FINANCIALS ================= -->
+        <section class="tab wide" id="tab-financials">
+          <div class="fin-layout">
+            <div class="fin-main card">
+              <div class="fin-bar">
+                <div class="seg" id="st-kind">
+                  <button data-v="income" class="on">Income statement</button>
+                  <button data-v="balance">Balance sheet</button>
+                  <button data-v="cashflow">Cash flow</button>
+                </div>
+                <div class="seg" id="st-freq">
+                  <button data-v="annual" class="on">Annual</button>
+                  <button data-v="quarterly">Quarterly</button>
+                </div>
+                <div class="seg" id="st-units">
+                  <button data-v="actual">Actual</button>
+                  <button data-v="thousands">K</button>
+                  <button data-v="millions" class="on">M</button>
+                  <button data-v="billions">B</button>
+                </div>
+              </div>
+              <div class="st-meta" id="st-meta"></div>
+              <div class="st-wrap" id="st-wrap"></div>
+            </div>
+
+            <aside class="fin-side">
+              <div class="card export-card" id="export-card">
+                <div class="card-title"><svg class="ic xl"><use href="#i-excel"/></svg>Export to Excel</div>
+                <div class="card-sub">One formatted workbook, real numbers, ready to model off.</div>
+
+                <div class="fld-label">Statements</div>
+                <label class="check"><input type="checkbox" name="ex-st" value="income" checked /> Income statement</label>
+                <label class="check"><input type="checkbox" name="ex-st" value="balance" checked /> Balance sheet</label>
+                <label class="check"><input type="checkbox" name="ex-st" value="cashflow" checked /> Cash flow statement</label>
+
+                <div class="fld-label">Periods</div>
+                <div class="seg full" id="ex-freq">
+                  <button data-v="annual" class="on">Annual</button>
+                  <button data-v="quarterly">Quarterly</button>
+                  <button data-v="both">Both</button>
+                </div>
+
+                <div class="fld-label">Units</div>
+                <div class="seg full" id="ex-units">
+                  <button data-v="actual">Actual</button>
+                  <button data-v="thousands">Thousands</button>
+                  <button data-v="millions" class="on">Millions</button>
+                  <button data-v="billions">Billions</button>
+                </div>
+
+                <div class="fld-label">Also include</div>
+                <label class="check"><input type="checkbox" name="ex-x" value="summary" checked /> Summary &amp; multiples</label>
+                <label class="check"><input type="checkbox" name="ex-x" value="comps" checked /> Comps table <span class="muted" id="ex-comps-n"></span></label>
+                <label class="check"><input type="checkbox" name="ex-x" value="analysts" checked /> Analyst ratings</label>
+                <label class="check"><input type="checkbox" name="ex-x" value="prices" /> Daily prices (5 years)</label>
+                <label class="check"><input type="checkbox" name="ex-x" value="model" /> DCF model (live formulas)</label>
+
+                <button class="btn primary big" id="btn-export"><svg class="ic"><use href="#i-excel"/></svg>Export workbook</button>
+                <div class="export-result hidden" id="export-result"></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ================= MODEL (DCF) ================= -->
+        <!-- ================= YOLO RATIONALE (YOLO mode only) ================= -->
+        <section class="tab" id="tab-thesis"><div id="thesis"></div></section>
+
+        <!-- ================= DEBT ================= -->
+        <section class="tab wide" id="tab-debt"><div id="debt"></div></section>
+
+        <section class="tab wide" id="tab-model">
+          <div class="md-loading hidden" id="md-loading"></div>
+          <div class="md-error hidden err-box" id="md-error"></div>
+          <div id="md-body" class="hidden">
+            <div class="md-models hidden" id="md-models"></div>
+            <div id="md-dcf">
+            <div class="card md-bar" id="md-bar"></div>
+            <div class="md-fit hidden" id="md-fit"></div>
+            <div class="md-layout">
+              <div class="md-main">
+                <div class="card">
+                  <div class="card-head">
+                    <div>
+                      <div class="card-title">Unlevered free cash flow</div>
+                      <div class="card-sub" id="md-sub"></div>
+                    </div>
+                    <div class="row-gap">
+                      <div class="seg" id="md-years"><button data-v="5">5 years</button><button data-v="10">10 years</button></div>
+                      <label class="check"><input type="checkbox" id="md-mid" /> Mid-year</label>
+                    </div>
+                  </div>
+                  <div class="md-legend"><span class="lg-in">12.5%</span> input — click to change · <span class="lg-calc">1,234.5</span> formula · <span class="lg-link">1,234.5</span> from the financial statements</div>
+                  <div class="md-wrap"><table class="md" id="md-table"></table></div>
+                </div>
+                <div class="card hidden" id="md-calib"></div>
+                <div class="card" id="md-streams"></div>
+                <div class="card" id="md-ff"></div>
+                <div class="card">
+                  <div class="card-head">
+                    <div>
+                      <div class="card-title">Sensitivity</div>
+                      <div class="card-sub">Implied share price; green is above today's price, red below. The centre cell is your case.</div>
+                    </div>
+                    <div class="seg" id="md-sens"><button data-v="gordon">WACC × growth</button><button data-v="multiple">WACC × exit multiple</button></div>
+                  </div>
+                  <div id="md-sens-grid"></div>
+                </div>
+              </div>
+              <aside class="md-side">
+                <div class="card" id="md-wacc"></div>
+                <div class="card" id="md-tv"></div>
+                <div class="card" id="md-bridge"></div>
+              </aside>
+            </div>
+            </div>
+            <!-- NAV, LBO or excess return, when one of them is showing -->
+            <div id="md-alt" class="hidden"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Settings: data sources, the general DCF assumptions every new model starts from, and the
+       per-company inputs Funnel is holding on to -->
+  <div class="modal hidden" id="sources-modal">
+    <div class="modal-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title"><svg class="ic"><use href="#i-gear"/></svg>Settings</div>
+        </div>
+        <button class="icon-btn" id="sources-close" title="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+      </div>
+      <div class="seg full set-tabs" id="set-tabs">
+        <button data-v="sources" class="on">Data sources</button>
+        <button data-v="dcf">DCF assumptions</button>
+        <button data-v="saved">Saved data</button>
+      </div>
+
+      <div class="set-pane" id="pane-sources">
+        <div class="card-sub" style="margin-bottom:12px">Pick where each part of Funnel gets its numbers. Anything a source can't answer falls back to the next source that can.</div>
+        <label class="check" style="margin-bottom:12px"><input type="checkbox" id="src-yahoo" /> Use Yahoo Finance <span class="muted">· personal use only — switch off before selling or sharing Funnel</span></label>
+        <div class="src-grid" id="src-sections"></div>
+
+        <div class="fld-label">API keys <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">· stored encrypted for your Windows account</span></div>
+        <div id="src-keys"></div>
+
+        <div class="fld-label">SEC EDGAR</div>
+        <div class="src-key">
+          <div class="sk-head"><b>Contact email</b><span class="muted">The SEC asks every app to identify itself. Only sent to sec.gov. Also needed for revenue streams in the DCF.</span></div>
+          <input type="email" id="src-email" placeholder="you@example.com" spellcheck="false" autocomplete="off" />
+        </div>
+
+        <label class="check" style="margin-top:14px"><input type="checkbox" id="src-macro" /> Show Bank of Canada and US Treasury rates on the Markets page</label>
+      </div>
+
+      <div class="set-pane hidden" id="pane-dcf">
+        <div class="card-sub" style="margin-bottom:4px">The starting point for every new model. A model you've already edited keeps its numbers. Use <b>Reset to defaults</b> on the Model tab to rebuild it from these.</div>
+        <div id="dcf-form"></div>
+      </div>
+
+      <div class="set-pane hidden" id="pane-saved">
+        <div class="card-sub" style="margin-bottom:4px">Numbers are fetched fresh every day. When you change a company's DCF assumptions or comp set, Funnel keeps your changes for the period below, counted from your last edit. After that they're dropped and the company reopens on the latest numbers.</div>
+        <div class="fld-label">Keep my changes for</div>
+        <div class="seg full" id="keep-saved"></div>
+        <div class="fld-label saved-head">Companies with saved changes <span class="muted" id="saved-n"></span>
+          <span style="flex:1"></span><button class="card-link danger hidden" id="saved-clear-all">Delete all</button></div>
+        <div id="saved-list"></div>
+        <div class="card-sub" style="margin-top:8px">Deleting takes effect right away and can't be undone. The company goes back to the latest numbers and Funnel's suggested peers.</div>
+      </div>
+
+      <div class="row-gap set-foot">
+        <button class="btn ghost hidden" id="dcf-restore" title="Put every DCF assumption back to Funnel's defaults">Restore Funnel defaults</button>
+        <span style="flex:1"></span>
+        <button class="btn ghost" id="sources-cancel">Cancel</button>
+        <button class="btn primary" id="sources-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export progress -->
+  <div class="progress-pop hidden" id="progress-pop">
+    <div class="pp-msg" id="pp-msg">Working…</div>
+    <div class="pp-bar"><div id="pp-fill"></div></div>
+  </div>
+  <div class="toasts" id="toasts"></div>
+
+  <script src="loader.js"></script>
+  <script src="app.js"></script>
+  <script src="explain.js"></script>
+  <div class="tab-card hidden" id="tab-card"></div>
+</body>
+</html>
