@@ -12,7 +12,7 @@ namespace Funnel;
 /// (<see cref="AppWindows"/>): a spare window is kept loaded and hidden, so one can appear under
 /// the pointer the moment a tab leaves its strip.
 /// </summary>
-public sealed class MainForm : Form
+public sealed class MainForm : Form, IAppWindow
 {
     public enum Kind { First, Seeded, Spare }
 
@@ -89,6 +89,29 @@ public sealed class MainForm : Form
         return new Rectangle(c.X + (int)(StripCss.X * s), c.Y + (int)(StripCss.Y * s), (int)(StripCss.Width * s), (int)(StripCss.Height * s));
     }
 
+    // ---------- IAppWindow (any thread) ----------
+
+    public bool IsClosed => IsDisposed;
+    public void PostJson(string json) => BeginInvoke(() => { try { _web.CoreWebView2?.PostWebMessageAsString(json); } catch { } });
+    public void SetTitle(string title) => BeginInvoke(() => Text = title);
+    public void CloseWindow() => BeginInvoke(Close);
+    public void Raise() => BeginInvoke(Activate);
+
+    public string? AskSavePath(string title, string defaultName, string dir) => (string?)Invoke(new Func<string?>(() =>
+    {
+        using var d = new SaveFileDialog
+        {
+            Title = title,
+            Filter = "Excel workbook (*.xlsx)|*.xlsx",
+            FileName = defaultName,
+            InitialDirectory = dir,
+            OverwritePrompt = true,
+            AddExtension = true,
+            DefaultExt = "xlsx",
+        };
+        return d.ShowDialog(this) == DialogResult.OK ? d.FileName : null;
+    }));
+
     // ---------- the page ----------
 
     /// <summary>Lift the loading screen off the (already painted) start screen.</summary>
@@ -132,7 +155,7 @@ public sealed class MainForm : Form
 
         core.SetVirtualHostNameToFolderMapping("app.local", await webRoot, CoreWebView2HostResourceAccessKind.Allow);
 
-        _bridge = new Bridge(this, _web, _config) { LoadStep = id => _loading?.Done(id), Seed = _seed, WindowId = Id };
+        _bridge = new Bridge(this, _config) { LoadStep = id => _loading?.Done(id), Seed = _seed, WindowId = Id };
         core.NavigationCompleted += (_, _) => _loading?.Done("ui");
 
         // Only our own page may talk to the Bridge, and the top frame may not leave app.local —

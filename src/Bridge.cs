@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.Web.WebView2.WinForms;
 using Funnel.Engine;
 using Funnel.Providers.Bonds;
 using Funnel.Providers;
@@ -24,8 +23,7 @@ public sealed class Bridge
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
     };
 
-    private readonly Form _form;
-    private readonly WebView2 _web;
+    private readonly IAppWindow _window;
     private readonly AppConfig _config;
 
     // One set of data sources (and their caches) for every window.
@@ -33,9 +31,9 @@ public sealed class Bridge
     private readonly CompositeProvider _provider;
     private IFinanceProvider Provider => _provider;
 
-    public Bridge(Form form, WebView2 web, AppConfig config)
+    public Bridge(IAppWindow window, AppConfig config)
     {
-        _form = form; _web = web; _config = config;
+        _window = window; _config = config;
         if (s_provider == null) ProviderRegistry.Configure(config);
         // A source falling back to another is said in the window the user is looking at.
         _provider = s_provider ??= new CompositeProvider(config, msg => (AppWindows.Active?.Bridge ?? this).Emit("notice", new { message = msg }));
@@ -49,9 +47,9 @@ public sealed class Bridge
     private void PostToJs(object obj)
     {
         var json = JsonSerializer.Serialize(obj, JsonOpts);
-        if (_form.IsDisposed) return;
-        try { _form.BeginInvoke(() => { try { _web.CoreWebView2?.PostWebMessageAsString(json); } catch { } }); }
-        catch { /* form closing */ }
+        if (_window.IsClosed) return;
+        try { _window.PostJson(json); }
+        catch { /* window closing */ }
     }
 
     private void Respond(int reqId, object? result) =>
@@ -110,11 +108,15 @@ public sealed class Bridge
             {
                 case "init":
                     Respond(reqId, BuildInitWindow());
-                    if (_form is MainForm { WindowKind: MainForm.Kind.Spare } sp) AppWindows.SpareLoaded(sp);
+#if WINDOWS
+                    if (_window is MainForm { WindowKind: MainForm.Kind.Spare } sp) AppWindows.SpareLoaded(sp);
                     else AppWindows.WantSpare(6000);   // a window ready for the first tab dragged out
+#endif
                     break;
                 case "strip":
-                    if (_form is MainForm sf) sf.StripCss = new System.Drawing.RectangleF(Num(payload, "x"), Num(payload, "y"), Num(payload, "w"), Num(payload, "h"));
+#if WINDOWS
+                    if (_window is MainForm sf) sf.StripCss = new System.Drawing.RectangleF(Num(payload, "x"), Num(payload, "y"), Num(payload, "w"), Num(payload, "h"));
+#endif
                     Respond(reqId, null);
                     break;
                 case "loadStep": LoadStep?.Invoke(Str(payload, "id")); Respond(reqId, null); break;
@@ -146,9 +148,10 @@ public sealed class Bridge
                 case "yoloScore": Run(reqId, () => YoloScore(Str(payload, "symbol"))); break;
                 case "yolo": Run(reqId, () => Yolo(payload.ValueKind == JsonValueKind.Object && payload.TryGetProperty("refresh", out var rf) && rf.ValueKind == JsonValueKind.True)); break;
                 case "openUrl": OpenExternal(Str(payload, "url")); Respond(reqId, null); break;
-                case "winTitle": _form.Text = Str(payload, "title") is { Length: > 0 } wt ? $"{wt} — Funnel" : $"Funnel  v{AppVersion}"; Respond(reqId, null); break;
+                case "winTitle": _window.SetTitle(Str(payload, "title") is { Length: > 0 } wt ? $"{wt} — Funnel" : $"Funnel  v{AppVersion}"); Respond(reqId, null); break;
+#if WINDOWS
                 case "tabDrag":
-                    if (_form is MainForm from)
+                    if (_window is MainForm from)
                         AppWindows.DragStarted(this, from, Str(payload, "id"), Str(payload, "tab"), Str(payload, "title"), Str(payload, "sub"),
                             new System.Drawing.PointF(Num(payload, "gx"), Num(payload, "gy")), Bool(payload, "single"));
                     Respond(reqId, null);
@@ -156,10 +159,15 @@ public sealed class Bridge
                 case "tabDragEnd": AppWindows.Ended(this, Str(payload, "id"), Bool(payload, "dropped")); Respond(reqId, null); break;
                 case "tabTake":
                     var took = AppWindows.Take(this, Str(payload, "id"));
-                    if (took != null) _form.Activate();   // the window a tab was dropped on comes to the front
+                    if (took != null) _window.Raise();   // the window a tab was dropped on comes to the front
                     Respond(reqId, new { tab = took });
                     break;
-                case "closeWindow": _form.BeginInvoke(_form.Close); Respond(reqId, null); break;
+#else
+                // One window on macOS: a tab dragged off the strip stays in it.
+                case "tabDrag": case "tabDragEnd": Respond(reqId, null); break;
+                case "tabTake": Respond(reqId, new { tab = (string?)null }); break;
+#endif
+                case "closeWindow": _window.CloseWindow(); Respond(reqId, null); break;
                 default: Fail(reqId, $"Unknown command: {cmd}"); break;
             }
         }
@@ -858,20 +866,7 @@ public sealed class Bridge
     {
         var dir = _config.ResolvedExportDir();
         try { Directory.CreateDirectory(dir); } catch { }
-        return (string?)_form.Invoke(new Func<string?>(() =>
-        {
-            using var d = new SaveFileDialog
-            {
-                Title = "Export to Excel",
-                Filter = "Excel workbook (*.xlsx)|*.xlsx",
-                FileName = defaultName,
-                InitialDirectory = dir,
-                OverwritePrompt = true,
-                AddExtension = true,
-                DefaultExt = "xlsx",
-            };
-            return d.ShowDialog(_form) == DialogResult.OK ? d.FileName : null;
-        }));
+        return _window.AskSavePath("Export to Excel", defaultName, dir);
     }
 
     private void OpenPath(int reqId, string path, bool reveal)
@@ -879,7 +874,8 @@ public sealed class Bridge
         try
         {
             if (!File.Exists(path)) { Fail(reqId, "That file has moved or been deleted."); return; }
-            if (reveal) Process.Start("explorer.exe", $"/select,\"{path}\"");
+            if (reveal && OperatingSystem.IsMacOS()) Process.Start("/usr/bin/open", new[] { "-R", path });
+            else if (reveal) Process.Start("explorer.exe", $"/select,\"{path}\"");
             else Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
             Respond(reqId, null);
         }

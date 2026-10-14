@@ -1,9 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!--
+    One project, two shells. Built on Windows: the WinForms + WebView2 app (Funnel.exe).
+    Built on macOS: a Photino window on the system WebKit view (packaged as Funnel.app by build-mac.sh).
+    The engine, the data sources and the web UI are shared; only the window around them differs.
+  -->
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
+    <FunnelMac Condition="'$(FunnelMac)' == '' And !$([MSBuild]::IsOSPlatform('Windows'))">true</FunnelMac>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
@@ -12,15 +18,13 @@
 
     <!-- Same as ARDesk: lets the 8.0 app run on a newer runtime when 8.0 isn't present. -->
     <RollForward>Major</RollForward>
-    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <Product>Funnel</Product>
     <AssemblyTitle>Funnel</AssemblyTitle>
     <Version>1.0.0</Version>
     <Authors>Noé Portelance</Authors>
 
-    <!-- Single, self-contained .exe: no .NET runtime or side files required. -->
+    <!-- Single, self-contained executable: no .NET runtime or side files required. -->
     <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
@@ -32,20 +36,48 @@
     <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
   </PropertyGroup>
 
-  <ItemGroup>
+  <!-- ===== Windows ===== -->
+  <PropertyGroup Condition="'$(FunnelMac)' != 'true'">
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(FunnelMac)' != 'true'">
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2792.45" />
-    <PackageReference Include="ClosedXML" Version="0.104.2" />
     <!-- DPAPI: API keys are stored encrypted for the current Windows user. -->
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <Compile Remove="Mac\**" />
   </ItemGroup>
 
-  <!-- Web UI is embedded so the published .exe is standalone; extracted to temp at launch. -->
+  <!-- ===== macOS ===== -->
+  <PropertyGroup Condition="'$(FunnelMac)' == 'true'">
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);MACOS</DefineConstants>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">osx-arm64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(FunnelMac)' == 'true'">
+    <PackageReference Include="Photino.NET" Version="4.0.16" />
+    <Compile Remove="Program.cs;MainForm.cs;AppWindows.cs;LoadingView.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
+  </ItemGroup>
+
+  <!-- Web UI is embedded so the published app is standalone. -->
   <ItemGroup>
     <EmbeddedResource Include="wwwroot\index.html"><LogicalName>web.index.html</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="wwwroot\styles.css"><LogicalName>web.styles.css</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="wwwroot\app.js"><LogicalName>web.app.js</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="wwwroot\explain.js"><LogicalName>web.explain.js</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="wwwroot\loader.js"><LogicalName>web.loader.js</LogicalName></EmbeddedResource>
+    <!-- Gives the page window.chrome.webview on macOS, where Photino's bridge is window.external. -->
+    <EmbeddedResource Include="wwwroot\bridge.js"><LogicalName>web.bridge.js</LogicalName></EmbeddedResource>
     <!-- Start-screen background (muted, looped behind the McGill-red sheet). -->
     <EmbeddedResource Include="Assets\McGill-Desautels-The-SnapYT.App.webm"><LogicalName>web.start-bg.webm</LogicalName></EmbeddedResource>
     <!-- Club logos for the guest disclaimer. -->

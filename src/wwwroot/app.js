@@ -370,7 +370,7 @@ function wireSearch() {
     } else if (e.key === "Enter") {
       e.preventDefault();
       const hit = searchHits[searchSel >= 0 ? searchSel : -1], sym = hit ? hit.symbol : input.value;
-      if (e.ctrlKey || e.altKey) openInNewTab(sym, false); else openCompany(sym);
+      if (e.ctrlKey || e.metaKey || e.altKey) openInNewTab(sym, false); else openCompany(sym);
     } else if (e.key === "Escape") { closeSearch(); input.blur(); }
   });
   input.addEventListener("blur", () => setTimeout(closeSearch, 150));
@@ -2221,7 +2221,7 @@ function drawChart() {
       <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="${col}" stop-opacity=".18"/><stop offset="1" stop-color="${col}" stop-opacity="0"/>
       </linearGradient></defs>
-      <style>.ax{font:11px "Segoe UI",sans-serif;fill:#94a3b8}</style>
+      <style>.ax{font:11px "Segoe UI",system-ui,sans-serif;fill:#94a3b8}</style>
       ${ticks.map((v) => `<line x1="${padL}" x2="${W - padR}" y1="${ys(v).toFixed(1)}" y2="${ys(v).toFixed(1)}" stroke="#eef1f5"/>
         <text x="${W - padR + 8}" y="${(ys(v) + 4).toFixed(1)}" class="ax">${fmt.num(v, decimals)}</text>`).join("")}
       ${prev ? `<line x1="${padL}" x2="${W - padR}" y1="${ys(prev).toFixed(1)}" y2="${ys(prev).toFixed(1)}" stroke="#94a3b8" stroke-dasharray="3 4"/>

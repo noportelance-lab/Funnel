@@ -14,6 +14,23 @@ Headless check of every data call + a full export to `%TEMP%`:
 dist\Funnel.exe --selftest AAPL
 ```
 
+### macOS
+
+Same app, same UI, on the system WebKit view ([Photino](https://www.tryphotino.io/)) instead of WebView2.
+Double-click **`Build Funnel (Mac).command`**, or run `./build-mac.sh` (`./build-mac.sh x64` for Intel Macs),
+with the .NET 8 SDK installed → `ios version/Funnel.app`. Drag it into Applications.
+
+```
+"ios version/Funnel.app/Contents/MacOS/Funnel" --selftest AAPL
+```
+
+Differences from Windows: one window (tabs can't be dragged out into windows of their own), no
+native loading screen (the start screen shows straight away), and settings live in
+`~/Library/Application Support/Funnel` with API keys encrypted under a key kept in the login Keychain.
+The app is signed ad hoc, not notarised: on another Mac, open it the first time with right-click → Open.
+Windows-only code (`Program.cs`, `MainForm.cs`, `AppWindows.cs`, `LoadingView.cs`) is left out of the
+Mac build; the Mac shell is in `src/Mac/`.
+
 ## Pages
 
 | Page | What it shows |

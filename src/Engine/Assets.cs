@@ -3,8 +3,8 @@ using System.Reflection;
 namespace Funnel.Engine;
 
 /// <summary>
-/// Extracts resources embedded in the single-file .exe (the web UI and the icon) to a temp
-/// folder so the published .exe needs no side files.
+/// Extracts resources embedded in the single-file app (the web UI and the icon) to a temp
+/// folder so the published app needs no side files.
 /// </summary>
 public static class Assets
 {
@@ -25,6 +25,7 @@ public static class Assets
         return outPath;
     }
 
+#if WINDOWS
     private static readonly Lazy<System.Drawing.Icon?> AppIconCache = new(() =>
     {
         try { return new System.Drawing.Icon(Extract("data.app.ico", Path.Combine(Root.Value, "app.ico"))); }
@@ -50,6 +51,11 @@ public static class Assets
     /// <summary>The app logo as an image (512 × 512, transparent corners) for native drawing.</summary>
     public static System.Drawing.Image? AppLogo() => AppLogoCache.Value;
 
+#endif
+
+    /// <summary>An embedded file of the web UI (e.g. "app.js"), for a window that serves it straight from memory.</summary>
+    public static Stream? WebFile(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream("web." + name);
+
     /// <summary>Extract the web UI (index.html + styles.css + app.js + explain.js + loader.js + app and club logos + start video) and return its folder.
     /// Once per run: later windows reuse the files the first one is already reading.</summary>
     public static string WebRoot() => WebRootOnce.Value;
@@ -60,7 +66,7 @@ public static class Assets
     {
         var dir = Path.Combine(Root.Value, "web");
         Directory.CreateDirectory(dir);
-        foreach (var file in new[] { "index.html", "styles.css", "app.js", "explain.js", "loader.js", "logo.png", "logo-mic.webp", "logo-dmcc.jpg" })
+        foreach (var file in new[] { "index.html", "styles.css", "app.js", "explain.js", "loader.js", "bridge.js", "logo.png", "logo-mic.webp", "logo-dmcc.jpg" })
             Extract("web." + file, Path.Combine(dir, file));
 
         // The video is 14 MB and never changes between runs of the same build — only rewrite it

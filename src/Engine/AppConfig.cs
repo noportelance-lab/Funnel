@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Funnel.Engine;
 
-/// <summary>Per-user preferences, saved as JSON in %LOCALAPPDATA%\Funnel\config.json.</summary>
+/// <summary>Per-user preferences, saved as JSON in config.json under <see cref="AppPaths.Home"/>.</summary>
 public sealed class AppConfig
 {
     private static readonly JsonSerializerOptions Opts = new() { WriteIndented = true };
@@ -22,7 +22,7 @@ public sealed class AppConfig
 
     /// <summary>Which provider serves each section (see Providers.Section); missing = the registry's default.</summary>
     public Dictionary<string, string> Sources { get; set; } = new(StringComparer.OrdinalIgnoreCase);
-    /// <summary>API keys by provider id, encrypted for this Windows user (DPAPI) and base64'd.</summary>
+    /// <summary>API keys by provider id, encrypted for this user (see <see cref="KeyVault"/>) and base64'd.</summary>
     public Dictionary<string, string> ApiKeys { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     /// <summary>The SEC asks every EDGAR client to identify itself with a contact email.</summary>
     public string ContactEmail { get; set; } = "";
@@ -97,12 +97,12 @@ public sealed class AppConfig
     [System.Text.Json.Serialization.JsonIgnore]
     public Dictionary<string, string> KeyOverrides { get; } = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>The decrypted key, or null when none is set (or it was saved by another Windows user).</summary>
+    /// <summary>The decrypted key, or null when none is set (or it was saved by another user).</summary>
     public string? GetKey(string providerId)
     {
         if (KeyOverrides.TryGetValue(providerId, out var k)) return k;
         if (!ApiKeys.TryGetValue(providerId, out var blob) || string.IsNullOrEmpty(blob)) return null;
-        try { return Encoding.UTF8.GetString(ProtectedData.Unprotect(Convert.FromBase64String(blob), Entropy, DataProtectionScope.CurrentUser)); }
+        try { return Encoding.UTF8.GetString(KeyVault.Unprotect(Convert.FromBase64String(blob), Entropy)); }
         catch { return null; }
     }
 
@@ -112,7 +112,7 @@ public sealed class AppConfig
         {
             if (string.IsNullOrWhiteSpace(key)) ApiKeys.Remove(providerId);
             else ApiKeys[providerId] = Convert.ToBase64String(
-                ProtectedData.Protect(Encoding.UTF8.GetBytes(key.Trim()), Entropy, DataProtectionScope.CurrentUser));
+                KeyVault.Protect(Encoding.UTF8.GetBytes(key.Trim()), Entropy));
         }
         Save();
     }

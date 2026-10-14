@@ -15,3 +15,5 @@ Funnel.exe
 ~$*
 .env
 dist-new/
+/build/
+/ios version/
